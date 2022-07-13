@@ -12,6 +12,12 @@ import { UserResolver } from "./UserResolver";
     return res.send("hello");
   });
 
+  AppDataSource.initialize().then(async () => {
+    // await Post.delete({});
+    AppDataSource.runMigrations();
+    // here you can start to work with your database
+  });
+
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
       resolvers: [UserResolver],

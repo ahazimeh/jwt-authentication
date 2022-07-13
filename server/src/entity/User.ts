@@ -1,18 +1,18 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm"
+import { Field, Int, ObjectType } from "type-graphql";
+import { Entity, PrimaryGeneratedColumn, Column, BaseEntity } from "typeorm";
 
-@Entity()
-export class User {
+@ObjectType()
+@Entity("users")
+export class User extends BaseEntity {
+  // it is allowed the active record pattern, (BaseEntity)
+  @Field(() => Int)
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @PrimaryGeneratedColumn()
-    id: number
+  @Field()
+  @Column("text")
+  email: string;
 
-    @Column()
-    firstName: string
-
-    @Column()
-    lastName: string
-
-    @Column()
-    age: number
-
+  @Column("text")
+  password: string;
 }
