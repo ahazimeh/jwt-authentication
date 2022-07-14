@@ -3,3 +3,6 @@ typeorm init --name server --database postgres
 npx tsconfig
 yarn
 npm upgrade-interactive --latest
+
+npm i jsonwebtoken
+npm i -D @types/jsonwebtoken

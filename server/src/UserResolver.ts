@@ -1,6 +1,20 @@
-import { hash } from "bcrypt";
-import { Arg, Mutation, Query, Resolver } from "type-graphql";
+import { compare, hash } from "bcrypt";
+import { sign } from "jsonwebtoken";
+import {
+  Arg,
+  Field,
+  Mutation,
+  ObjectType,
+  Query,
+  Resolver,
+} from "type-graphql";
 import { User } from "./entity/User";
+
+@ObjectType()
+class LoginResponse {
+  @Field()
+  accessToken: string;
+}
 
 @Resolver()
 export class UserResolver {
@@ -12,6 +26,29 @@ export class UserResolver {
   @Query(() => [User])
   users() {
     return User.find();
+  }
+
+  @Mutation(() => LoginResponse)
+  async login(
+    @Arg("email", () => String) email: string,
+    @Arg("password", () => String) password: string
+  ): Promise<LoginResponse> {
+    const user = await User.findOneBy({ email });
+    if (!user) {
+      throw new Error("could not find user");
+    }
+    const valid = await compare(password, user.password);
+    if (!valid) {
+      throw new Error("bad password");
+    }
+
+    // login successful
+
+    return {
+      accessToken: sign({ userId: user.id }, "fhdsiufsidf", {
+        expiresIn: "15m",
+      }),
+    };
   }
 
   @Mutation(() => Boolean)
