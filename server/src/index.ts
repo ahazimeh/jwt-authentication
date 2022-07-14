@@ -1,3 +1,4 @@
+import "dotenv/config";
 import "reflect-metadata";
 import { AppDataSource } from "./data-source";
 import { User } from "./entity/User";
@@ -6,6 +7,9 @@ import { ApolloServer } from "apollo-server-express";
 import { buildSchema } from "type-graphql";
 import { UserResolver } from "./UserResolver";
 
+const {
+  ApolloServerPluginLandingPageGraphQLPlayground,
+} = require("apollo-server-core");
 (async () => {
   const app = express();
   app.get("/", (_req, res) => {
@@ -23,6 +27,12 @@ import { UserResolver } from "./UserResolver";
       resolvers: [UserResolver],
     }),
     context: ({ req, res }) => ({ req, res }),
+
+    plugins: [
+      ApolloServerPluginLandingPageGraphQLPlayground({
+        // options
+      }),
+    ],
     // typeDefs: `
     // type Query {
     //   hello: String!

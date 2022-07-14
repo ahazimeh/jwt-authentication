@@ -2,13 +2,16 @@ import { compare, hash } from "bcrypt";
 import { sign } from "jsonwebtoken";
 import {
   Arg,
+  Ctx,
   Field,
   Mutation,
   ObjectType,
   Query,
   Resolver,
 } from "type-graphql";
+import { createAccessToken, createRefreshToken } from "./auth";
 import { User } from "./entity/User";
+import { MyContext } from "./MyContext";
 
 @ObjectType()
 class LoginResponse {
@@ -31,7 +34,8 @@ export class UserResolver {
   @Mutation(() => LoginResponse)
   async login(
     @Arg("email", () => String) email: string,
-    @Arg("password", () => String) password: string
+    @Arg("password", () => String) password: string,
+    @Ctx() { res }: MyContext
   ): Promise<LoginResponse> {
     const user = await User.findOneBy({ email });
     if (!user) {
@@ -44,10 +48,12 @@ export class UserResolver {
 
     // login successful
 
+    res.cookie("jid", createRefreshToken(user), {
+      httpOnly: true,
+    });
+
     return {
-      accessToken: sign({ userId: user.id }, "fhdsiufsidf", {
-        expiresIn: "15m",
-      }),
+      accessToken: createAccessToken(user),
     };
   }
 
