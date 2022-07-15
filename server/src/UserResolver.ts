@@ -8,9 +8,11 @@ import {
   ObjectType,
   Query,
   Resolver,
+  UseMiddleware,
 } from "type-graphql";
 import { createAccessToken, createRefreshToken } from "./auth";
 import { User } from "./entity/User";
+import { isAuth } from "./isAuth";
 import { MyContext } from "./MyContext";
 
 @ObjectType()
@@ -24,6 +26,12 @@ export class UserResolver {
   @Query(() => String)
   hello() {
     return "hi";
+  }
+
+  @Query(() => String)
+  @UseMiddleware(isAuth)
+  bye(@Ctx() { payload }: MyContext) {
+    return `your user id is: ${payload!.userId}`;
   }
 
   @Query(() => [User])
