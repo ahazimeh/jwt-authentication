@@ -4,6 +4,7 @@ import {
   Arg,
   Ctx,
   Field,
+  Int,
   Mutation,
   ObjectType,
   Query,
@@ -38,6 +39,19 @@ export class UserResolver {
   @Query(() => [User])
   users() {
     return User.find();
+  }
+
+  @Mutation(() => Boolean)
+  async revokeRefreshTokensForUser(
+    @Arg("userId", () => Int) userId: number,
+    @Ctx() { AppDataSource }: MyContext
+  ) {
+    await AppDataSource.getRepository(User).increment(
+      { id: userId },
+      "tokenVersion",
+      1
+    );
+    return true;
   }
 
   @Mutation(() => LoginResponse)

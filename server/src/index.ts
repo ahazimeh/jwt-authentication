@@ -37,6 +37,9 @@ const {
     const user = await User.findOneBy({ id: payload.userId });
     if (!user) return res.send({ ok: false, accessToken: "" });
 
+    if (user.tokenVersion !== payload.tokenVersion)
+      return res.send({ ok: false, accessToken: "" });
+
     sendRefreshToken(res, createRefreshToken(user));
     return res.send({ ok: true, accessToken: createAccessToken(user) });
   });
@@ -51,7 +54,7 @@ const {
     schema: await buildSchema({
       resolvers: [UserResolver],
     }),
-    context: ({ req, res }) => ({ req, res }),
+    context: ({ req, res }) => ({ req, res, AppDataSource }),
 
     plugins: [
       ApolloServerPluginLandingPageGraphQLPlayground({
