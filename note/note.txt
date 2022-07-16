@@ -8,3 +8,7 @@ npm i jsonwebtoken
 npm i -D @types/jsonwebtoken
 
 npm i cookie-parser
+npm i -D @types/cookie-parser
+npm i @types/graphql
+
+npm i react-router-dom @types/react-router-dom

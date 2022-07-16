@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 // import ApolloClient from "apollo-boost";
-import App from "./App";
+import { App } from "./Routes";
 import reportWebVitals from "./reportWebVitals";
 // import { ApolloProvider } from "@apollo/react-hooks";
 
