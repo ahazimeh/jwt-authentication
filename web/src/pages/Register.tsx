@@ -1,9 +1,12 @@
-import React, { useState } from "react";
+import { createBrowserHistory } from "history";
+import React, { ReactNode, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useRegisterMutation } from "../generated/graphql";
 
 interface registerProps {}
 
 export const Register: React.FC<registerProps> = ({}) => {
+  let navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [register] = useRegisterMutation();
@@ -16,6 +19,8 @@ export const Register: React.FC<registerProps> = ({}) => {
         console.log(email, password);
         const response = await register({ variables: { email, password } });
         console.log(response);
+
+        navigate("/");
       }}
     >
       <div>
