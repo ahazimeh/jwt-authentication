@@ -12,3 +12,7 @@ npm i -D @types/cookie-parser
 npm i @types/graphql
 
 npm i react-router-dom @types/react-router-dom
+
+
+
+npm i -D @types/cors // maybe we need this

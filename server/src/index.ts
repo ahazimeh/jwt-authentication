@@ -10,12 +10,19 @@ import cookieParser from "cookie-parser";
 import { verify } from "jsonwebtoken";
 import { createAccessToken, createRefreshToken } from "./auth";
 import { sendRefreshToken } from "./sendRefreshToken";
+import cors from "cors";
 
 const {
   ApolloServerPluginLandingPageGraphQLPlayground,
 } = require("apollo-server-core");
 (async () => {
   const app = express();
+  app.use(
+    cors({
+      credentials: true,
+      origin: "http://localhost:3000",
+    })
+  );
   app.use(cookieParser());
   app.get("/", (_req, res) => {
     return res.send("hello");
@@ -74,7 +81,7 @@ const {
   });
 
   await apolloServer.start();
-  apolloServer.applyMiddleware({ app });
+  apolloServer.applyMiddleware({ app, cors: false });
   app.listen(4000, () => {
     console.log("express server started");
   });
