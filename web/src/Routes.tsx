@@ -6,7 +6,7 @@ import { Home } from "./pages/Home";
 import { Login } from "./pages/Login";
 import { Register } from "./pages/Register";
 
-export const App: React.FC = () => {
+export const MainRoute: React.FC = () => {
   return (
     <BrowserRouter>
       <div>
