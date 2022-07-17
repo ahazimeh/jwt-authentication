@@ -61,6 +61,18 @@ export class UserResolver {
   }
 
   @Mutation(() => Boolean)
+  async logout(@Ctx() { AppDataSource, res }: MyContext) {
+    // await AppDataSource.getRepository(User).increment(
+    //   { id: userId },
+    //   "tokenVersion",
+    //   1
+    // );
+
+    sendRefreshToken(res, ""); // res.clearCookie() // another option
+    return true;
+  }
+
+  @Mutation(() => Boolean)
   async revokeRefreshTokensForUser(
     @Arg("userId", () => Int) userId: number,
     @Ctx() { AppDataSource }: MyContext
