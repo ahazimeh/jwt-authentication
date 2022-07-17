@@ -16,3 +16,8 @@ npm i react-router-dom @types/react-router-dom
 
 
 npm i -D @types/cors // maybe we need this
+
+apollo-link-token-refresh
+
+
+npm i jwt-decode with types

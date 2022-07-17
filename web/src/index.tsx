@@ -5,6 +5,10 @@ import { App } from "./App";
 import reportWebVitals from "./reportWebVitals";
 // import { ApolloProvider } from "@apollo/react-hooks";
 
+import { TokenRefreshLink } from "apollo-link-token-refresh";
+
+import { from } from "@apollo/client";
+
 import {
   ApolloClient,
   InMemoryCache,
@@ -15,21 +19,16 @@ import {
 
 import { createHttpLink } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
-import { getAccessToken } from "./accessToken";
+import { getAccessToken, setAccessToken } from "./accessToken";
 
-// const client: any = new ApolloClient({
-//   uri: "http://localhost:4000/graphql",
-// });
+import jwtDecode from "jwt-decode";
 
 const httpLink = createHttpLink({
   uri: "http://localhost:4000/graphql",
 });
 
 const authLink = setContext((_, { headers }) => {
-  // get the authentication token from local storage if it exists
-  // const token = localStorage.getItem("token");
   const accessToken = getAccessToken();
-  // return the headers to the context so httpLink can read them
   return {
     headers: {
       ...headers,
@@ -38,9 +37,65 @@ const authLink = setContext((_, { headers }) => {
   };
 });
 
+const tokenRefreshLink = new TokenRefreshLink({
+  accessTokenField: "accessToken",
+  isTokenValidOrUndefined: () => {
+    const token = getAccessToken();
+    if (!token) {
+      return true;
+    }
+
+    try {
+      const { exp }: any = jwtDecode(token);
+      if (Date.now() >= exp * 1000) {
+        return false;
+      } else {
+        return true;
+      }
+    } catch (err) {
+      return false;
+    }
+  },
+  fetchAccessToken: () => {
+    // console.log("yy");
+    return fetch("http://localhost:4000/refresh_token", {
+      method: "Post",
+      credentials: "include",
+    });
+  },
+  handleFetch: (accessToken) => {
+    console.log("xx", accessToken);
+    setAccessToken(accessToken);
+  },
+  // handleResponse: (operation, accessTokenField) => (response: any) => {
+  //   console.log("zz", accessTokenField, operation, response);
+  //   // here you can parse response, handle errors, prepare returned token to
+  //   // further operations
+  //   // returned object should be like this:
+  //   // {
+  //   //    access_token: 'token string here'
+  //   // }
+  // },
+  // handleError: (err) => {
+  //   // full control over handling token fetch Error
+  //   console.warn("Your refresh token is invalid. Try to relogin");
+  //   console.error(err);
+
+  //   // your custom action here
+  //   // user.logout();
+  // },
+});
+
+const additiveLink = from([
+  tokenRefreshLink,
+  authLink.concat(httpLink),
+  // new RetryLink(),
+  // new MyAuthLink(),
+  // new HttpLink({ uri: 'http://localhost:4000/graphql' })
+]);
+
 const client = new ApolloClient({
-  // uri: 'https://48p1r2roz4.sse.codesandbox.io',
-  link: authLink.concat(httpLink),
+  link: additiveLink,
   cache: new InMemoryCache(),
   credentials: "include",
 });
