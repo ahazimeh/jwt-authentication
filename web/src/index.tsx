@@ -25,6 +25,7 @@ import jwtDecode from "jwt-decode";
 
 const httpLink = createHttpLink({
   uri: "http://localhost:4000/graphql",
+  credentials: "include",
 });
 
 const authLink = setContext((_, { headers }) => {

@@ -19,16 +19,16 @@ export const Login: React.FC = ({}) => {
         console.log(email, password);
         const response = await login({
           variables: { email, password },
-          // update: (store, { data }) => {
-          //   if (!data) return null;
-          //   store.writeQuery<MeQuery>({
-          //     query: MeDocument,
-          //     data: {
-          //       __typename: "Query",
-          //       me: data.login.user,
-          //     },
-          //   });
-          // },
+          update: (store, { data }) => {
+            if (!data) return null;
+            store.writeQuery<MeQuery>({
+              query: MeDocument,
+              data: {
+                __typename: "Query",
+                me: data.login.user,
+              },
+            });
+          },
         });
         console.log(response);
 
